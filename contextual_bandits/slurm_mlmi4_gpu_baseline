@@ -37,10 +37,10 @@
 #! ######################################################################################
 #! ######################################################################################
 # !set configurations in run.py, e.g. options="--train_json=train_fbank.json --lr=0.01":
-#options="--expid lbanp-8_best_model --cmab_mode train --model lbanp --num_latents 8 --num_epochs 70000"
+#options="--expid lbanp-8_hundred_thousand_epoches --cmab_mode train --model lbanp --num_latents 8"
 #options="--expid tnpd_default_10000-epoch --cmab_mode train --num_epochs 80000 --resume True"
-#options="--expid lbanp-8_best_model --cmab_mode eval --cmab_wheel_delta 0.995 --model lbanp --num_latents 8" 
-options="--expid tnpd_default_10000-epoch --cmab_mode eval --cmab_wheel_delta 0.995"
+#options="--expid lbanp-8_hundred_thousand_epoches --cmab_mode eval --cmab_wheel_delta 0.7 --model lbanp --num_latents 8" 
+#options="--expid tnpd_default_10000-epoch --cmab_mode eval --cmab_wheel_delta 0.995"
 
 #! ######################################################################################
 #! ######################################################################################

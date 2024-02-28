@@ -17,12 +17,6 @@ import torch
 import time
 import matplotlib.pyplot as plt
 
-
-# Monkey patch collections
-import collections
-import collections.abc
-for type_name in collections.abc.__all__:
-    setattr(collections, type_name, getattr(collections.abc, type_name))
 from attrdict import AttrDict
 from tqdm import tqdm
 
@@ -227,7 +221,7 @@ def train(args, model):
     torch.cuda.manual_seed(args.cmab_train_seed)
 
     dataset = get_bandit_dataset(args)
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=int(args.num_epochs / args.cmab_train_update_freq))
     device = args.device
 
@@ -252,10 +246,11 @@ def train(args, model):
     logger.info(f"Experiment: Bandit Train | {args.expid}")
     logger.info(f"Device: {device}\n")
     logger.info(f'Total number of parameters: {sum(p.numel() for p in model.parameters())}\n')
-    min_loss = float('inf')
+
     for step in tqdm(range(start_step, args.num_epochs + 1)):
         model.train()
         optimizer.zero_grad()
+
         for batch in dataset:
             for k, v in batch.items():
                 if v is not None:
@@ -276,8 +271,6 @@ def train(args, model):
             for key, val in outs.items():
                 ravg.update(key, val)
 
-        cur_loss = ravg.get('loss')
-
         if step % args.print_freq == 0:
             _, filename = get_trainset_path(args)
             line = f'[model] {model._get_name()}-{filename} [step] {step} '
@@ -287,10 +280,7 @@ def train(args, model):
             logger.info(line)
             ravg.reset()
 
-        #if (cur_loss < min_loss) and (step % args.save_freq == 0 or step == args.num_epochs):
-        if cur_loss < min_loss:
-            print(f"min_loss: {min_loss}, cur_loss: {cur_loss}, update the best model!")
-            min_loss = cur_loss
+        if step % args.save_freq == 0 or step == args.num_epochs:
             ckpt = AttrDict()
             ckpt.model = model.state_dict()
             ckpt.optimizer = optimizer.state_dict()
@@ -328,7 +318,6 @@ def eval(args, models):
 
 
 def plot(args, names):
-    print("!!!!plotting!!!!!")
     rewards = []
     regrets = []
     for name in names:
@@ -358,8 +347,7 @@ def plot(args, names):
     # cum_rewards = np.cumsum(rewards, 1)  # [B,N,Nm]
     regrets = np.stack(regrets, -1)  # [B,N,Nm]
     cum_regrets = np.cumsum(regrets, 1)  # [B,N,Nm]
-    print(f'Regret: {regrets}')
-    print(f"Cumulative regrets: {cum_regrets}")
+
     _plot_cum_reg(args, names, cum_regrets)
     _log(args, names, regrets)
 
@@ -372,7 +360,6 @@ def _log(args, names, values):
     with open(osp.join(path, 'args.yaml'), 'w') as f:
         yaml.dump(args.__dict__, f)
     logger = get_logger(osp.join(path, file))
-    print(f'!!!!The regret log address: {osp.join(path, file)}')
     line = f"{filename}\n\n"
 
     line += "[cumulative regret]\n\n"
