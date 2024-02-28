@@ -97,7 +97,9 @@ class LBANP(nn.Module):
 
         # Perform Decoding
         query_embeddings = self.query_embedder(batch.xt)
+
         encoding = self.decoder(query_embeddings, context_encodings)
+        
         # Make predictions
         if self.norm_first:
             encoding = self.norm(encoding)

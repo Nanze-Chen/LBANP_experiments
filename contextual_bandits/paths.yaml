@@ -13,8 +13,8 @@
 # paths.yaml
 
 datasets_path:
-  "datasets"
+  "/rds/user/fz287/hpc-work/MLMI4/datasets"
 evalsets_path:
-  "evalsets"
+  "/rds/user/fz287/hpc-work/MLMI4/evalsets"
 results_path:
-  "results"
+  "/rds/user/fz287/hpc-work/MLMI4/results"
