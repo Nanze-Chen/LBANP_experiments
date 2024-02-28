@@ -17,12 +17,6 @@ import torch
 import time
 import matplotlib.pyplot as plt
 
-
-# Monkey patch collections
-import collections
-import collections.abc
-for type_name in collections.abc.__all__:
-    setattr(collections, type_name, getattr(collections.abc, type_name))
 from attrdict import AttrDict
 from tqdm import tqdm
 
@@ -227,7 +221,7 @@ def train(args, model):
     torch.cuda.manual_seed(args.cmab_train_seed)
 
     dataset = get_bandit_dataset(args)
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=int(args.num_epochs / args.cmab_train_update_freq))
     device = args.device
 
